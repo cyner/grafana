@@ -3,8 +3,9 @@ define([
   'lodash',
   'kbn',
   'jquery',
+  'moment'
 ],
-function (angular, _, kbn, $) {
+function (angular, _, kbn, $, moment) {
   'use strict';
 
   var module = angular.module('grafana.services');
@@ -85,6 +86,39 @@ function (angular, _, kbn, $) {
         scope.panelMeta.timeInfo += ' timeshift ' + timeShift;
         scope.range.from = kbn.parseDateMath(timeShift, scope.range.from);
         scope.range.to = kbn.parseDateMath(timeShift, scope.range.to);
+
+        scope.rangeUnparsed = scope.range;
+      }
+
+      function compileDate(date) {
+        var string = date.replace(/today\((-?\d*)\)/gi, function(match, num) {
+          return moment().add(num, 'day').format('YYYY-MM-DD');
+        })
+
+        return new Date(string);
+      }
+
+      var range = scope.panel.range;
+
+      if (range) {
+        var timeInfo = []
+
+        if (range.from) {
+          scope.range.from = compileDate(range.from);
+          timeInfo.push(scope.range.from);
+        }
+
+        if (range.to) {
+          scope.range.to = compileDate(range.to);
+          scope.panelMeta.timeInfo += scope.range.from;
+          timeInfo.push(scope.range.to);
+        }
+
+        if (range.timeInfo) {
+          scope.panelMeta.timeInfo = range.timeInfo;
+        } else {
+          scope.panelMeta.timeInfo = timeInfo.join(' to ');
+        }
 
         scope.rangeUnparsed = scope.range;
       }
