@@ -5,8 +5,10 @@ define([
   'lodash',
   'kbn',
   'jquery',
+  'moment'
 ],
-function (angular, dateMath, rangeUtil, _, kbn, $) {
+
+function (angular, dateMath, rangeUtil, _, kbn, $, moment) {
   'use strict';
 
   var module = angular.module('grafana.services');
@@ -95,6 +97,39 @@ function (angular, dateMath, rangeUtil, _, kbn, $) {
         scope.range.to = dateMath.parseDateMath(timeShift, scope.range.to, true);
 
         scope.rangeRaw = scope.range;
+      }
+
+      function compileDate(date) {
+        var string = date.replace(/today\((-?\d*)\)/gi, function(match, num) {
+          return moment().add(num, 'day').format('YYYY-MM-DD');
+        })
+
+        return new Date(string);
+      }
+
+      var range = scope.panel.range;
+
+      if (range) {
+        var timeInfo = []
+
+        if (range.from) {
+          scope.range.from = compileDate(range.from);
+          timeInfo.push(scope.range.from);
+        }
+
+        if (range.to) {
+          scope.range.to = compileDate(range.to);
+          scope.panelMeta.timeInfo += scope.range.from;
+          timeInfo.push(scope.range.to);
+        }
+
+        if (range.timeInfo) {
+          scope.panelMeta.timeInfo = range.timeInfo;
+        } else {
+          scope.panelMeta.timeInfo = timeInfo.join(' to ');
+        }
+
+        scope.rangeUnparsed = scope.range;
       }
 
       if (scope.panel.hideTimeOverride) {
