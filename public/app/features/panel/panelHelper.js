@@ -102,7 +102,7 @@ function (angular, dateMath, rangeUtil, _, kbn, $, moment) {
       function compileDate(date) {
         var string = date.replace(/today\((-?\d*)\)/gi, function(match, num) {
           return moment().add(num, 'day').format('YYYY-MM-DD');
-        })
+        });
 
         return new Date(string);
       }
@@ -110,7 +110,7 @@ function (angular, dateMath, rangeUtil, _, kbn, $, moment) {
       var range = scope.panel.range;
 
       if (range) {
-        var timeInfo = []
+        var timeInfo = [];
 
         if (range.from) {
           scope.range.from = compileDate(range.from);
