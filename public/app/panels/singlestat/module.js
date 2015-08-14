@@ -147,7 +147,7 @@ function (angular, app, _, kbn, TimeSeries, PanelMeta) {
       }
 
       return true;
-    }
+    };
 
     $scope.setColoring = function(options) {
       if (options.background) {
