@@ -94,7 +94,14 @@ function (angular, app, _, TimeSeries, kbn, PanelMeta) {
     };
 
     $scope.dataHandler = function(results) {
-      $scope.series = _.map(results.data, $scope.seriesHandler);
+      $scope.data = results.data;
+      $scope.seriesOverrides = $scope.panel.seriesOverrides || {};
+
+      $scope.series = _.chain(results.data)
+        .map($scope.seriesHandler)
+        .compact()
+        .value();
+
       $scope.render();
     };
 
@@ -104,10 +111,42 @@ function (angular, app, _, TimeSeries, kbn, PanelMeta) {
         alias: seriesData.target,
       });
 
+      series.applySeriesOverrides($scope.seriesOverrides);
+
+      if (!$scope.applyOverrides(series)) {
+        return false;
+      }
+
       series.flotpairs = series.getFlotPairs($scope.panel.nullPointMode);
 
       return series;
     };
+
+    $scope.applyOverrides = function(series) {
+      if (series.ignore) {
+        return false;
+      }
+
+      if (series.divideWith) {
+        var divider = _.find($scope.data, { target: series.divideWith });
+
+        if (divider) {
+          series.datapoints.forEach(function(datapoint, idx) {
+            if (divider.datapoints[idx]) {
+              datapoint[0] /= divider.datapoints[idx][0];
+            }
+          });
+        }
+      }
+
+      if (series.multiplyBy) {
+        series.datapoints.forEach(function(datapoint) {
+          datapoint[0] *= series.multiplyBy;
+        });
+      }
+
+      return true;
+    }
 
     $scope.setColoring = function(options) {
       if (options.background) {

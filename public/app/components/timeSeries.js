@@ -57,6 +57,9 @@ function (_, kbn) {
       if (override.color !== void 0) { this.color = override.color; }
       if (override.transform !== void 0) { this.transform = override.transform; }
       if (override.legend !== void 0) { this.legend = override.legend; }
+      if (override.multiplyBy !== void 0) { this.multiplyBy = parseInt(override.multiplyBy, 10); }
+      if (override.divideWith !== void 0) { this.divideWith = override.divideWith; }
+      if (override.ignore !== void 0) { this.ignore = !!override.ignore; }
 
       if (override.yaxis !== void 0) {
         this.yaxis = override.yaxis;
