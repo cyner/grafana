@@ -133,7 +133,11 @@ function (angular, app, _, TimeSeries, kbn, PanelMeta) {
         if (divider) {
           series.datapoints.forEach(function(datapoint, idx) {
             if (divider.datapoints[idx]) {
-              datapoint[0] /= divider.datapoints[idx][0];
+              if (divider.datapoints[idx][0] === 0) {
+                datapoint[0] = 0;
+              } else {
+                datapoint[0] /= divider.datapoints[idx][0];
+              }
             }
           });
         }
