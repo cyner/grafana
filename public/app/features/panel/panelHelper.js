@@ -101,23 +101,23 @@ function (angular, _, kbn, $, moment) {
       var range = scope.panel.range;
 
       if (range) {
-        var timeInfo = [];
+        var customTimeInfo = [];
 
         if (range.from) {
           scope.range.from = compileDate(range.from);
-          timeInfo.push(scope.range.from);
+          customTimeInfo.push(scope.range.from);
         }
 
         if (range.to) {
           scope.range.to = compileDate(range.to);
           scope.panelMeta.timeInfo += scope.range.from;
-          timeInfo.push(scope.range.to);
+          customTimeInfo.push(scope.range.to);
         }
 
         if (range.timeInfo) {
           scope.panelMeta.timeInfo = range.timeInfo;
         } else {
-          scope.panelMeta.timeInfo = timeInfo.join(' to ');
+          scope.panelMeta.timeInfo = customTimeInfo.join(' to ');
         }
 
         scope.rangeUnparsed = scope.range;
